@@ -1,49 +1,43 @@
 import React, { useState } from 'react';
-import { useNavigate, Routes, Route } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import {
-    Container,
-    Grid,
-    Paper,
-    Typography,
-    Button,
     Box,
     Drawer,
+    AppBar,
+    Toolbar,
     List,
+    Typography,
+    Divider,
+    IconButton,
     ListItem,
     ListItemIcon,
     ListItemText,
-    IconButton,
-    AppBar,
-    Toolbar,
-    Avatar,
-    Divider,
     useTheme,
+    useMediaQuery,
+    Avatar,
+    Badge,
+    Button,
 } from '@mui/material';
 import {
-    Person as PersonIcon,
-    ShoppingCart as OrderIcon,
-    CalendarToday as ScheduleIcon,
-    Build as MaintenanceIcon,
     Menu as MenuIcon,
-    Logout as LogoutIcon,
-    Dashboard as DashboardIcon,
+    People as PeopleIcon,
     LocalFlorist as PlantIcon,
+    ShoppingCart as OrderIcon,
+    Schedule as ScheduleIcon,
+    Dashboard as DashboardIcon,
+    Logout as LogoutIcon,
     Notifications as NotificationIcon,
 } from '@mui/icons-material';
-import CustomerProfile from './customer/CustomerProfile';
-import OrderList from './customer/OrderList';
-import MaintenanceSchedule from './customer/MaintenanceSchedule';
-import MaintenanceRequest from './customer/MaintenanceRequest';
-import Dashboard from './customer/Dashboard';
 
 const drawerWidth = 240;
 
-const CustomerDashboard = () => {
+const AdminLayout = ({ children }) => {
     const navigate = useNavigate();
-    const { user, logout } = useAuth();
+    const { logout, user } = useAuth();
     const [mobileOpen, setMobileOpen] = useState(false);
     const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
@@ -55,30 +49,30 @@ const CustomerDashboard = () => {
     };
 
     const menuItems = [
-        { text: 'Dashboard', icon: <DashboardIcon />, path: '/customer' },
-        { text: 'Profile', icon: <PersonIcon />, path: '/customer/profile' },
-        { text: 'Orders', icon: <OrderIcon />, path: '/customer/orders' },
-        { text: 'Maintenance Schedule', icon: <ScheduleIcon />, path: '/customer/schedule' },
-        { text: 'Request Maintenance', icon: <MaintenanceIcon />, path: '/customer/maintenance' },
+        { text: 'Dashboard', icon: <DashboardIcon />, path: '/admin' },
+        { text: 'Users', icon: <PeopleIcon />, path: '/admin/users' },
+        { text: 'Plants', icon: <PlantIcon />, path: '/admin/plants' },
+        { text: 'Orders', icon: <OrderIcon />, path: '/admin/orders' },
+        { text: 'Maintenance Schedules', icon: <ScheduleIcon />, path: '/admin/schedules' },
     ];
 
     const drawer = (
-        <div>
+        <Box>
             <Box
                 sx={{
-                    background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-                    p: 2,
+                    background: 'linear-gradient(45deg, #2e7d32 30%, #4caf50 90%)',
+                    p: 3,
                     color: 'white',
                 }}
             >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                    <PlantIcon sx={{ fontSize: 28 }} />
-                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    <PlantIcon sx={{ fontSize: 32 }} />
+                    <Typography variant="h5" sx={{ fontWeight: 700 }}>
                         Plant Service
                     </Typography>
                 </Box>
                 <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                    Customer Panel
+                    Admin Panel
                 </Typography>
             </Box>
             <Box 
@@ -98,36 +92,39 @@ const CustomerDashboard = () => {
                         boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                     }}
                 >
-                    {user?.name?.charAt(0) || 'U'}
+                    {user?.name?.charAt(0) || 'A'}
                 </Avatar>
                 <Box>
                     <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                        {user?.name}
+                        {user?.name || 'Admin'}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        {user?.email}
+                        {user?.email || 'admin@example.com'}
                     </Typography>
                 </Box>
             </Box>
             <Divider />
-            <List sx={{ px: 1 }}>
+            <List sx={{ px: 2, py: 1 }}>
                 {menuItems.map((item) => (
                     <ListItem
                         button
                         key={item.text}
                         onClick={() => {
                             navigate(item.path);
-                            setMobileOpen(false);
+                            if (isMobile) setMobileOpen(false);
                         }}
                         sx={{
-                            borderRadius: 1,
+                            borderRadius: 2,
                             mb: 0.5,
                             '&:hover': {
-                                backgroundColor: 'rgba(33, 150, 243, 0.08)',
+                                backgroundColor: 'primary.lighter',
+                            },
+                            '&.Mui-selected': {
+                                backgroundColor: 'primary.lighter',
                             }
                         }}
                     >
-                        <ListItemIcon sx={{ color: 'primary.main' }}>
+                        <ListItemIcon sx={{ color: 'primary.main', minWidth: 40 }}>
                             {item.icon}
                         </ListItemIcon>
                         <ListItemText 
@@ -139,44 +136,44 @@ const CustomerDashboard = () => {
                         />
                     </ListItem>
                 ))}
-                <Divider sx={{ my: 1 }} />
-                <ListItem 
+                <Divider sx={{ my: 2 }} />
+                <ListItem
                     button 
                     onClick={handleLogout}
                     sx={{
-                        borderRadius: 1,
+                        borderRadius: 2,
                         color: 'error.main',
                         '&:hover': {
                             backgroundColor: 'error.lighter',
                         }
                     }}
                 >
-                    <ListItemIcon sx={{ color: 'error.main' }}>
+                    <ListItemIcon sx={{ color: 'error.main', minWidth: 40 }}>
                         <LogoutIcon />
                     </ListItemIcon>
                     <ListItemText 
                         primary="Logout"
                         primaryTypographyProps={{
-                            fontSize: '0.95rem',
-                            fontWeight: 500
+                            fontWeight: 500,
                         }}
                     />
                 </ListItem>
             </List>
-        </div>
+        </Box>
     );
 
     return (
         <Box sx={{ display: 'flex' }}>
             <AppBar
                 position="fixed"
-                elevation={0}
                 sx={{
                     width: { sm: `calc(100% - ${drawerWidth}px)` },
                     ml: { sm: `${drawerWidth}px` },
-                    backgroundColor: 'background.paper',
+                    bgcolor: 'background.paper',
+                    color: 'text.primary',
                     borderBottom: '1px solid',
                     borderColor: 'divider',
+                    boxShadow: 'none',
                 }}
             >
                 <Toolbar>
@@ -185,11 +182,7 @@ const CustomerDashboard = () => {
                         aria-label="open drawer"
                         edge="start"
                         onClick={handleDrawerToggle}
-                        sx={{ 
-                            mr: 2, 
-                            display: { sm: 'none' },
-                            color: 'text.primary'
-                        }}
+                        sx={{ mr: 2, display: { sm: 'none' } }}
                     >
                         <MenuIcon />
                     </IconButton>
@@ -201,21 +194,22 @@ const CustomerDashboard = () => {
                     }}>
                         <Typography 
                             variant="h6" 
-                            component="div"
+                            component="div" 
                             sx={{ 
-                                color: 'text.primary',
                                 fontWeight: 600,
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: 1
                             }}
                         >
-                            <PlantIcon sx={{ color: 'primary.main' }} />
-                            Plant Service
+                            <DashboardIcon sx={{ color: 'primary.main' }} />
+                            Admin Dashboard
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                            <IconButton color="primary">
-                                <NotificationIcon />
+                            <IconButton color="default">
+                                <Badge badgeContent={3} color="error">
+                                    <NotificationIcon />
+                                </Badge>
                             </IconButton>
                             <Avatar 
                                 sx={{ 
@@ -224,12 +218,13 @@ const CustomerDashboard = () => {
                                     height: 35
                                 }}
                             >
-                                {user?.name?.charAt(0) || 'U'}
+                                {user?.name?.charAt(0) || 'A'}
                             </Avatar>
                         </Box>
                     </Box>
                 </Toolbar>
             </AppBar>
+
             <Box
                 component="nav"
                 sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
@@ -246,7 +241,8 @@ const CustomerDashboard = () => {
                         '& .MuiDrawer-paper': { 
                             boxSizing: 'border-box', 
                             width: drawerWidth,
-                            boxShadow: '0 8px 24px rgba(0,0,0,0.1)'
+                            bgcolor: 'background.paper',
+                            boxShadow: 2
                         },
                     }}
                 >
@@ -259,8 +255,8 @@ const CustomerDashboard = () => {
                         '& .MuiDrawer-paper': { 
                             boxSizing: 'border-box', 
                             width: drawerWidth,
-                            borderRight: '1px solid',
-                            borderColor: 'divider',
+                            bgcolor: 'background.paper',
+                            boxShadow: 2
                         },
                     }}
                     open
@@ -268,27 +264,22 @@ const CustomerDashboard = () => {
                     {drawer}
                 </Drawer>
             </Box>
+
             <Box
                 component="main"
                 sx={{
                     flexGrow: 1,
-                    p: 3,
                     width: { sm: `calc(100% - ${drawerWidth}px)` },
                     mt: 8,
-                    backgroundColor: theme.palette.background.default,
-                    minHeight: '100vh'
+                    minHeight: '100vh',
+                    bgcolor: 'grey.50',
+                    p: 3
                 }}
             >
-                <Routes>
-                    <Route path="profile" element={<CustomerProfile />} />
-                    <Route path="orders" element={<OrderList />} />
-                    <Route path="schedule" element={<MaintenanceSchedule />} />
-                    <Route path="maintenance" element={<MaintenanceRequest />} />
-                    <Route path="/" element={<Dashboard />} />
-                </Routes>
+                {children}
             </Box>
         </Box>
     );
 };
 
-export default CustomerDashboard; 
+export default AdminLayout;
